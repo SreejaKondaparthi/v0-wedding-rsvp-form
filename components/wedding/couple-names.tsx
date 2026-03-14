@@ -1,7 +1,7 @@
 export function CoupleNames() {
   return (
     <div className="text-center py-8 space-y-4">
-      <p className="text-wedding-maroon text-lg tracking-wide">
+      <p className="text-wedding-cocoa text-lg tracking-wide">
         Cordially Invited by
       </p>
       <p className="text-wedding-red text-xl font-semibold">
@@ -9,16 +9,26 @@ export function CoupleNames() {
       </p>
       
       <div className="py-6">
-        <h1 className="font-[var(--font-script)] text-5xl md:text-7xl text-wedding-maroon leading-tight">
+        <h1 className="font-[var(--font-script)] text-5xl md:text-7xl text-wedding-cocoa leading-tight">
           Priyanka
         </h1>
         <p className="text-wedding-gold text-3xl md:text-4xl font-medium py-2">&</p>
-        <h1 className="font-[var(--font-script)] text-5xl md:text-7xl text-wedding-maroon leading-tight">
+        <h1 className="font-[var(--font-script)] text-5xl md:text-7xl text-wedding-cocoa leading-tight">
           Harish
         </h1>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-center gap-8 md:gap-16 text-base md:text-lg text-foreground">
+      {/* Romantic Message */}
+      <div className="py-4 px-6 max-w-lg mx-auto">
+        <p className="text-wedding-cocoa text-lg md:text-xl italic font-medium leading-relaxed">
+          &ldquo;From Best Friends to Life Partners&rdquo;
+        </p>
+        <p className="text-wedding-gold text-base md:text-lg mt-2">
+          Bless us as we begin this beautiful journey together
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-center gap-8 md:gap-16 text-base md:text-lg text-wedding-cocoa pt-4">
         <div className="space-y-1">
           <p className="font-semibold text-wedding-red">Priyanka</p>
           <p>D/O Sri. Bikshapathi</p>
