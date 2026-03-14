@@ -1,22 +1,25 @@
 import { GaneshaHeader } from "@/components/wedding/ganesha-header"
 import { CoupleNames } from "@/components/wedding/couple-names"
 import { EventTimeline } from "@/components/wedding/event-timeline"
-import { DecorativeBorder, MandalaCorner } from "@/components/wedding/decorative-border"
+import { DecorativeBorder } from "@/components/wedding/decorative-border"
 import { RSVPForm } from "@/components/wedding/rsvp-form"
 import { GuestListButton } from "@/components/wedding/guest-list"
-import { BackgroundDecorations } from "@/components/wedding/background-decorations"
+import Image from "next/image"
 
 export default function WeddingPage() {
   return (
-    <main className="min-h-screen bg-background relative overflow-hidden">
-      {/* Thoranalu & Flower Background Decorations */}
-      <BackgroundDecorations />
-
-      {/* Decorative Corner Mandalas */}
-      <MandalaCorner className="absolute top-0 left-0" />
-      <MandalaCorner className="absolute top-0 right-0 rotate-90" />
-      <MandalaCorner className="absolute bottom-0 left-0 -rotate-90" />
-      <MandalaCorner className="absolute bottom-0 right-0 rotate-180" />
+    <main className="min-h-screen relative overflow-hidden">
+      {/* Beautiful Wedding Background Image */}
+      <div className="fixed inset-0 z-0">
+        <Image
+          src="/images/wedding-background.jpeg"
+          alt="Wedding decoration background with marigold garlands, bells, and lotus flowers"
+          fill
+          className="object-cover object-center"
+          priority
+          quality={90}
+        />
+      </div>
 
       {/* Main Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 pb-16">
@@ -50,12 +53,6 @@ export default function WeddingPage() {
         </section>
 
         <DecorativeBorder />
-
-        {/* Event Timeline */}
-        <EventTimeline />
-
-        <DecorativeBorder />
-
         {/* RSVP Section */}
         <section className="py-12 px-4" id="rsvp">
           <h2 className="text-3xl md:text-4xl font-semibold text-center text-wedding-cocoa mb-2">
@@ -66,6 +63,11 @@ export default function WeddingPage() {
           </p>
           <RSVPForm />
         </section>
+
+        {/* Event Timeline */}
+        <EventTimeline />
+
+        <DecorativeBorder />
 
         {/* Admin Section */}
         <section className="py-8 text-center">
