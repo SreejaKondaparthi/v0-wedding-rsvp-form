@@ -12,7 +12,7 @@ export function GaneshaHeader() {
           priority
         />
       </div>
-      <p className="text-sm text-wedding-maroon font-medium tracking-widest uppercase">
+      <p className="text-sm text-wedding-cocoa font-medium tracking-widest uppercase">
         Shri Ganeshaya Namaha
       </p>
     </div>

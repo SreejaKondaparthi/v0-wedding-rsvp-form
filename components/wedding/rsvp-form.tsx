@@ -103,7 +103,7 @@ export function RSVPForm() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="text-2xl font-semibold text-wedding-maroon">Thank You!</h3>
+          <h3 className="text-2xl font-semibold text-wedding-cocoa">Thank You!</h3>
           <p className="text-foreground">
             {isAttending === "yes" 
               ? "We are excited to celebrate with you and your family!"
@@ -120,7 +120,7 @@ export function RSVPForm() {
               setExistingGuest(null)
               setFormData({ name: "", email: "", familyMembers: "1" })
             }}
-            className="border-wedding-gold text-wedding-maroon hover:bg-wedding-gold/10"
+            className="border-wedding-gold text-wedding-cocoa hover:bg-wedding-gold/10"
           >
             Submit Another RSVP
           </Button>
@@ -132,7 +132,7 @@ export function RSVPForm() {
   return (
     <Card className="max-w-md mx-auto bg-card border-2 border-wedding-gold/30">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl text-wedding-maroon">RSVP</CardTitle>
+        <CardTitle className="text-2xl text-wedding-cocoa">RSVP</CardTitle>
         <CardDescription>
           {existingGuest 
             ? "Update your response below"

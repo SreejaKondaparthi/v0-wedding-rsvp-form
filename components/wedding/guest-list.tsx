@@ -40,14 +40,14 @@ export function GuestListButton() {
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          className="border-wedding-gold text-wedding-maroon hover:bg-wedding-gold/10"
+          className="border-wedding-gold text-wedding-cocoa hover:bg-wedding-gold/10"
         >
           View Guest List
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-wedding-maroon">Guest List</DialogTitle>
+          <DialogTitle className="text-2xl text-wedding-cocoa">Guest List</DialogTitle>
           <DialogDescription>
             View all RSVP responses for the wedding
           </DialogDescription>
@@ -96,7 +96,7 @@ function GuestListContent() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="bg-wedding-gold/10 border-wedding-gold/30">
           <CardContent className="pt-4 text-center">
-            <p className="text-3xl font-bold text-wedding-maroon">{data.stats.totalResponses}</p>
+            <p className="text-3xl font-bold text-wedding-cocoa">{data.stats.totalResponses}</p>
             <p className="text-sm text-muted-foreground">Total Responses</p>
           </CardContent>
         </Card>
@@ -170,7 +170,7 @@ function GuestTable({ guests, showFamilyMembers = false }: { guests: Guest[]; sh
               <TableCell className="text-muted-foreground">{guest.email}</TableCell>
               {showFamilyMembers && (
                 <TableCell className="text-center">
-                  <Badge variant="secondary" className="bg-wedding-gold/20 text-wedding-maroon">
+                  <Badge variant="secondary" className="bg-wedding-gold/20 text-wedding-cocoa">
                     {guest.family_members}
                   </Badge>
                 </TableCell>
