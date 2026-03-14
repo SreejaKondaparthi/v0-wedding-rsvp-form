@@ -4,10 +4,10 @@ export function CoupleNames() {
       <p className="text-wedding-cocoa text-lg tracking-wide">
         Cordially Invited by
       </p>
-      <p className="text-wedding-red text-xl font-semibold">
-        Kondaparthi & Vavilalla Families
+      <p className="text-xl font-semibold">
+        <h1>Kondaparthi & Vavilalla Families</h1>
       </p>
-      
+
       <div className="py-6">
         <h1 className="font-[var(--font-script)] text-5xl md:text-7xl text-wedding-cocoa leading-tight">
           Priyanka
