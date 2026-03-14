@@ -1,14 +1,24 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Cormorant_Garamond, Great_Vibes } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const cormorant = Cormorant_Garamond({ 
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cormorant"
+});
+
+const greatVibes = Great_Vibes({ 
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-script"
+});
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Priyanka & Harish Wedding | April 2026',
+  description: 'You are cordially invited to celebrate the wedding of Priyanka and Harish - April 24-26, 2026 in Tampa, FL',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -36,8 +46,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">
+      <body className={`${cormorant.variable} ${greatVibes.variable} font-serif antialiased`}>
         {children}
+        <Toaster richColors position="top-center" />
         <Analytics />
       </body>
     </html>
