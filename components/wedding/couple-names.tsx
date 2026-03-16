@@ -5,7 +5,7 @@ export function CoupleNames() {
         Cordially Invited by
       </p>
       <p className="text-xl font-semibold">
-        <h1>Kondaparthi & Vavilalla Families</h1>
+        <h1>Kondaparthi & Vavilala Families</h1>
       </p>
 
       <div className="py-6">
