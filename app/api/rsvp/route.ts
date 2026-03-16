@@ -4,22 +4,22 @@ import { NextRequest, NextResponse } from "next/server"
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, email, isAttending, familyMembers } = body
+    const { name, isAttending, familyMembers } = body
 
-    if (!name || !email) {
+    if (!name) {
       return NextResponse.json(
-        { error: "Name and email are required" },
+        { error: "Name is required" },
         { status: 400 }
       )
     }
 
     const supabase = await createClient()
 
-    // Check if guest already exists
+    // Check if guest already exists by name (case insensitive)
     const { data: existingGuest } = await supabase
       .from("guests")
       .select("*")
-      .eq("email", email.toLowerCase())
+      .ilike("name", name.trim())
       .single()
 
     if (existingGuest) {
@@ -33,8 +33,7 @@ export async function POST(request: NextRequest) {
     const { data: newGuest, error } = await supabase
       .from("guests")
       .insert({
-        name,
-        email: email.toLowerCase(),
+        name: name.trim(),
         is_attending: isAttending,
         family_members: isAttending ? familyMembers : 0
       })
@@ -48,16 +47,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
-
-    // Trigger confirmation email (async, don't wait)
-    fetch(`${request.nextUrl.origin}/api/send-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "confirmation",
-        guestId: newGuest.id
-      })
-    }).catch(console.error)
 
     return NextResponse.json({
       success: true,
@@ -75,7 +64,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, name, email, isAttending, familyMembers } = body
+    const { id, name, isAttending, familyMembers } = body
 
     if (!id) {
       return NextResponse.json(
@@ -89,8 +78,7 @@ export async function PUT(request: NextRequest) {
     const { data: updatedGuest, error } = await supabase
       .from("guests")
       .update({
-        name,
-        email: email.toLowerCase(),
+        name: name.trim(),
         is_attending: isAttending,
         family_members: isAttending ? familyMembers : 0
       })
@@ -105,16 +93,6 @@ export async function PUT(request: NextRequest) {
         { status: 500 }
       )
     }
-
-    // Trigger update confirmation email
-    fetch(`${request.nextUrl.origin}/api/send-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "update",
-        guestId: updatedGuest.id
-      })
-    }).catch(console.error)
 
     return NextResponse.json({
       success: true,
