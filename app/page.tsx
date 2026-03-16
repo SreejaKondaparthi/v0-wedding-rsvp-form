@@ -3,7 +3,6 @@ import { CoupleNames } from "@/components/wedding/couple-names"
 import { EventTimeline } from "@/components/wedding/event-timeline"
 import { DecorativeBorder } from "@/components/wedding/decorative-border"
 import { RSVPForm } from "@/components/wedding/rsvp-form"
-import { GuestListButton } from "@/components/wedding/guest-list"
 import Image from "next/image"
 
 export default function WeddingPage() {
@@ -47,9 +46,7 @@ export default function WeddingPage() {
           <p className="text-xl text-wedding-gold mt-6 font-medium">
             Tampa, Florida
           </p>
-          <p className="text-base text-wedding-cocoa/70 mt-2">
-            Celebrations begin April 24th
-          </p>
+          
         </section>
 
         <DecorativeBorder />
@@ -68,11 +65,6 @@ export default function WeddingPage() {
         <EventTimeline />
 
         <DecorativeBorder />
-
-        {/* Admin Section */}
-        <section className="py-8 text-center">
-          <GuestListButton />
-        </section>
 
         {/* Footer */}
         <footer className="text-center py-8 border-t border-wedding-gold/20 mt-8">

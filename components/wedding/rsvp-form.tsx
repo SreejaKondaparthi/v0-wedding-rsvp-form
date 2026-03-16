@@ -9,13 +9,72 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Spinner } from "@/components/ui/spinner"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { toast } from "sonner"
+import { Calendar } from "lucide-react"
+
+// Generate calendar file content for the wedding event
+function generateICSContent() {
+  const eventTitle = "Priyanka & Harish Wedding"
+  const eventDescription = "Wedding Ceremony and Muhurtham at ICC, Tampa, FL. Muhurtham at 8:20 AM."
+  const eventLocation = "ICC, Tampa, FL"
+  const startDate = "20260426T070000" // April 26, 2026 7:00 AM
+  const endDate = "20260426T140000" // April 26, 2026 2:00 PM
+  
+  return `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Priyanka & Harish Wedding//EN
+BEGIN:VEVENT
+UID:priyanka-harish-wedding-2026@wedding.com
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART:${startDate}
+DTEND:${endDate}
+SUMMARY:${eventTitle}
+DESCRIPTION:${eventDescription}
+LOCATION:${eventLocation}
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P7D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: Priyanka & Harish Wedding in 1 week!
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:Reminder: Priyanka & Harish Wedding is tomorrow!
+END:VALARM
+END:VEVENT
+END:VCALENDAR`
+}
+
+function downloadCalendarFile() {
+  const icsContent = generateICSContent()
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'priyanka-harish-wedding.ics'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+  toast.success("Calendar event downloaded! Open the file to add it to your calendar.")
+}
+
+// Generate Google Calendar URL
+function getGoogleCalendarUrl() {
+  const title = encodeURIComponent("Priyanka & Harish Wedding")
+  const details = encodeURIComponent("Wedding Ceremony and Muhurtham at ICC, Tampa, FL. Muhurtham at 8:20 AM.")
+  const location = encodeURIComponent("ICC, Tampa, FL")
+  const startDate = "20260426T070000"
+  const endDate = "20260426T140000"
+  
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}&location=${location}`
+}
 
 export function RSVPForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [isAttending, setIsAttending] = useState<string>("yes")
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
     familyMembers: "1"
   })
   const [submitted, setSubmitted] = useState(false)
@@ -36,7 +95,6 @@ export function RSVPForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
-          email: formData.email,
           isAttending: isAttending === "yes",
           familyMembers: isAttending === "yes" ? parseInt(formData.familyMembers) : 0
         })
@@ -53,7 +111,7 @@ export function RSVPForm() {
         toast.info("We found your existing RSVP. You can update it below.")
       } else {
         setSubmitted(true)
-        toast.success("Thank you! Your RSVP has been submitted. A confirmation email will be sent shortly.")
+        toast.success("Thank you! Your RSVP has been submitted.")
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong")
@@ -73,7 +131,6 @@ export function RSVPForm() {
         body: JSON.stringify({
           id: existingGuest.id,
           name: formData.name,
-          email: formData.email,
           isAttending: isAttending === "yes",
           familyMembers: isAttending === "yes" ? parseInt(formData.familyMembers) : 0
         })
@@ -96,7 +153,7 @@ export function RSVPForm() {
 
   if (submitted) {
     return (
-      <Card className="max-w-md mx-auto bg-card border-2 border-wedding-gold/30">
+      <Card className="max-w-md mx-auto bg-card/95 border-2 border-wedding-gold/30">
         <CardContent className="pt-8 pb-8 text-center space-y-4">
           <div className="w-16 h-16 mx-auto rounded-full bg-wedding-gold/20 flex items-center justify-center">
             <svg className="w-8 h-8 text-wedding-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -110,17 +167,43 @@ export function RSVPForm() {
               : "We will miss you, but thank you for letting us know."
             }
           </p>
-          <p className="text-sm text-muted-foreground">
-            A confirmation email will be sent to your email address.
-          </p>
+          
+          {isAttending === "yes" && (
+            <div className="pt-4 space-y-3">
+              <p className="text-sm text-wedding-cocoa font-medium">Add to your calendar:</p>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={downloadCalendarFile}
+                  className="border-wedding-gold text-wedding-cocoa hover:bg-wedding-gold/10"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Download .ics
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  asChild
+                  className="border-wedding-gold text-wedding-cocoa hover:bg-wedding-gold/10"
+                >
+                  <a href={getGoogleCalendarUrl()} target="_blank" rel="noopener noreferrer">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Google Calendar
+                  </a>
+                </Button>
+              </div>
+            </div>
+          )}
+          
           <Button 
             variant="outline" 
             onClick={() => {
               setSubmitted(false)
               setExistingGuest(null)
-              setFormData({ name: "", email: "", familyMembers: "1" })
+              setFormData({ name: "", familyMembers: "1" })
             }}
-            className="border-wedding-gold text-wedding-cocoa hover:bg-wedding-gold/10"
+            className="border-wedding-gold text-wedding-cocoa hover:bg-wedding-gold/10 mt-4"
           >
             Submit Another RSVP
           </Button>
@@ -130,7 +213,7 @@ export function RSVPForm() {
   }
 
   return (
-    <Card className="max-w-md mx-auto bg-card border-2 border-wedding-gold/30">
+    <Card className="max-w-md mx-auto bg-card/95 border-2 border-wedding-gold/30">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl text-wedding-cocoa">RSVP</CardTitle>
         <CardDescription>
@@ -150,19 +233,6 @@ export function RSVPForm() {
                 placeholder="Enter your full name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-                className="border-wedding-gold/30 focus:border-wedding-gold"
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="email">Email Address</FieldLabel>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 className="border-wedding-gold/30 focus:border-wedding-gold"
               />
