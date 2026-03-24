@@ -16,7 +16,7 @@ export default function WeddingPage() {
           fill
           className="object-cover object-center"
           priority
-          quality={90}
+          quality={75}
         />
       </div>
 

@@ -33,21 +33,33 @@ interface GuestData {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-// Simple password protection - you can change this password
-const ADMIN_PASSWORD = "priyanka2026"
-
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      setError("")
-    } else {
-      setError("Incorrect password")
+    setIsLoading(true)
+    setError("")
+    
+    try {
+      const res = await fetch("/api/admin/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      })
+      
+      if (res.ok) {
+        setIsAuthenticated(true)
+      } else {
+        setError("Incorrect password")
+      }
+    } catch {
+      setError("Something went wrong. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -75,8 +87,9 @@ export default function AdminPage() {
               <Button 
                 type="submit" 
                 className="w-full bg-wedding-red hover:bg-wedding-maroon text-primary-foreground"
+                disabled={isLoading}
               >
-                Access Guest List
+                {isLoading ? "Verifying..." : "Access Guest List"}
               </Button>
             </form>
             <div className="mt-6 text-center">
