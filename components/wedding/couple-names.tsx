@@ -37,7 +37,7 @@ export function CoupleNames() {
         <div className="hidden md:block w-px bg-wedding-gold/50" />
         <div className="space-y-1">
           <p className="font-semibold text-wedding-red">Harish</p>
-          <p>S/O Sri. Prabhakar</p>
+          <p>S/O Sri. Prabhakar Reddy</p>
           <p>& Smt. Amala</p>
         </div>
       </div>
