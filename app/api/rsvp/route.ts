@@ -5,11 +5,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { name, isAttending, familyMembers } = body
-    
-    console.log("[v0] RSVP POST received:", { name, isAttending, familyMembers })
 
     if (!name) {
-      console.log("[v0] Name is missing")
       return NextResponse.json(
         { error: "Name is required" },
         { status: 400 }
@@ -17,19 +14,15 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createClient()
-    console.log("[v0] Supabase client created")
 
     // Check if guest already exists by name (case insensitive)
-    const { data: existingGuest, error: lookupError } = await supabase
+    const { data: existingGuest } = await supabase
       .from("guests")
       .select("*")
       .ilike("name", name.trim())
       .single()
 
-    console.log("[v0] Existing guest lookup:", { existingGuest, lookupError })
-
     if (existingGuest) {
-      console.log("[v0] Found existing guest, returning for update")
       return NextResponse.json({
         existing: true,
         guest: existingGuest
@@ -37,7 +30,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert new guest
-    console.log("[v0] Inserting new guest...")
     const { data: newGuest, error } = await supabase
       .from("guests")
       .insert({
@@ -48,12 +40,10 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
-    console.log("[v0] Insert result:", { newGuest, error })
-
     if (error) {
-      console.error("[v0] Supabase insert error:", error)
+      console.error("Supabase error:", error)
       return NextResponse.json(
-        { error: "Failed to save RSVP: " + error.message },
+        { error: "Failed to save RSVP" },
         { status: 500 }
       )
     }
