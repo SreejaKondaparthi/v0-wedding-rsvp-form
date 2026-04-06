@@ -1,5 +1,46 @@
-import { createClient } from "@/lib/supabase/server"
+import { put, list } from "@vercel/blob"
 import { NextRequest, NextResponse } from "next/server"
+
+const GUESTS_FILE = "wedding-guests.json"
+
+interface Guest {
+  id: string
+  name: string
+  is_attending: boolean
+  family_members: number
+  created_at: string
+  updated_at: string
+}
+
+// Helper to get guests from Blob
+async function getGuests(): Promise<Guest[]> {
+  try {
+    const { blobs } = await list({ prefix: GUESTS_FILE })
+    if (blobs.length === 0) {
+      return []
+    }
+    
+    const response = await fetch(blobs[0].url)
+    if (!response.ok) {
+      return []
+    }
+    
+    const guests = await response.json()
+    return guests as Guest[]
+  } catch (error) {
+    console.error("Error reading guests:", error)
+    return []
+  }
+}
+
+// Helper to save guests to Blob
+async function saveGuests(guests: Guest[]): Promise<void> {
+  await put(GUESTS_FILE, JSON.stringify(guests, null, 2), {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: "application/json"
+  })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,14 +54,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
+    const guests = await getGuests()
 
     // Check if guest already exists by name (case insensitive)
-    const { data: existingGuest } = await supabase
-      .from("guests")
-      .select("*")
-      .ilike("name", name.trim())
-      .single()
+    const existingGuest = guests.find(
+      g => g.name.toLowerCase() === name.trim().toLowerCase()
+    )
 
     if (existingGuest) {
       return NextResponse.json({
@@ -29,24 +68,18 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Insert new guest
-    const { data: newGuest, error } = await supabase
-      .from("guests")
-      .insert({
-        name: name.trim(),
-        is_attending: isAttending,
-        family_members: isAttending ? familyMembers : 0
-      })
-      .select()
-      .single()
-
-    if (error) {
-      console.error("Supabase error:", error)
-      return NextResponse.json(
-        { error: "Failed to save RSVP" },
-        { status: 500 }
-      )
+    // Create new guest
+    const newGuest: Guest = {
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      is_attending: isAttending,
+      family_members: isAttending ? familyMembers : 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     }
+
+    guests.push(newGuest)
+    await saveGuests(guests)
 
     return NextResponse.json({
       success: true,
@@ -73,30 +106,30 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
+    const guests = await getGuests()
+    const guestIndex = guests.findIndex(g => g.id === id)
 
-    const { data: updatedGuest, error } = await supabase
-      .from("guests")
-      .update({
-        name: name.trim(),
-        is_attending: isAttending,
-        family_members: isAttending ? familyMembers : 0
-      })
-      .eq("id", id)
-      .select()
-      .single()
-
-    if (error) {
-      console.error("Supabase error:", error)
+    if (guestIndex === -1) {
       return NextResponse.json(
-        { error: "Failed to update RSVP" },
-        { status: 500 }
+        { error: "Guest not found" },
+        { status: 404 }
       )
     }
 
+    // Update guest
+    guests[guestIndex] = {
+      ...guests[guestIndex],
+      name: name.trim(),
+      is_attending: isAttending,
+      family_members: isAttending ? familyMembers : 0,
+      updated_at: new Date().toISOString()
+    }
+
+    await saveGuests(guests)
+
     return NextResponse.json({
       success: true,
-      guest: updatedGuest
+      guest: guests[guestIndex]
     })
   } catch (error) {
     console.error("RSVP update error:", error)
@@ -109,20 +142,12 @@ export async function PUT(request: NextRequest) {
 
 export async function GET() {
   try {
-    const supabase = await createClient()
+    const guests = await getGuests()
 
-    const { data: guests, error } = await supabase
-      .from("guests")
-      .select("*")
-      .order("created_at", { ascending: false })
-
-    if (error) {
-      console.error("Supabase error:", error)
-      return NextResponse.json(
-        { error: "Failed to fetch guests" },
-        { status: 500 }
-      )
-    }
+    // Sort by created_at descending
+    guests.sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
 
     const attending = guests.filter(g => g.is_attending)
     const notAttending = guests.filter(g => !g.is_attending)
