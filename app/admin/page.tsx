@@ -147,7 +147,7 @@ function GuestListContent() {
     )
   }
 
-  if (!data || data.guests.length === 0) {
+  if (!data || !data.guests || data.guests.length === 0) {
     return (
       <Card className="border-2 border-wedding-gold/30">
         <CardContent className="text-center py-12 text-muted-foreground">
