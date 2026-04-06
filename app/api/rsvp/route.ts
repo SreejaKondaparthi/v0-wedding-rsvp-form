@@ -1,4 +1,4 @@
-import { put, list } from "@vercel/blob"
+import { put, list, get } from "@vercel/blob"
 import { NextRequest, NextResponse } from "next/server"
 
 const GUESTS_FILE = "wedding-guests.json"
@@ -15,19 +15,17 @@ interface Guest {
 // Helper to get guests from Blob
 async function getGuests(): Promise<Guest[]> {
   try {
-    const { blobs } = await list({ prefix: GUESTS_FILE })
-    if (blobs.length === 0) {
+    const result = await get(GUESTS_FILE, { access: "private" })
+    
+    if (!result) {
       return []
     }
     
-    const response = await fetch(blobs[0].url)
-    if (!response.ok) {
-      return []
-    }
-    
-    const guests = await response.json()
+    const text = await result.text()
+    const guests = JSON.parse(text)
     return guests as Guest[]
   } catch (error) {
+    // File doesn't exist yet or other error - return empty array
     console.error("Error reading guests:", error)
     return []
   }
@@ -36,7 +34,7 @@ async function getGuests(): Promise<Guest[]> {
 // Helper to save guests to Blob
 async function saveGuests(guests: Guest[]): Promise<void> {
   await put(GUESTS_FILE, JSON.stringify(guests, null, 2), {
-    access: "public",
+    access: "private",
     addRandomSuffix: false,
     contentType: "application/json"
   })
