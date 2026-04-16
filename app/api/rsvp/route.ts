@@ -15,35 +15,47 @@ interface Guest {
 // Helper to get guests from Blob
 async function getGuests(): Promise<Guest[]> {
   try {
+    console.log("[v0] getGuests - attempting to read from blob...")
     const result = await get(GUESTS_FILE, { access: "private" })
     
     if (!result) {
+      console.log("[v0] getGuests - no result, returning empty array")
       return []
     }
     
     const text = await result.text()
+    console.log("[v0] getGuests - got text:", text.substring(0, 100))
     const guests = JSON.parse(text)
     return guests as Guest[]
   } catch (error) {
     // File doesn't exist yet or other error - return empty array
-    console.error("Error reading guests:", error)
+    console.error("[v0] getGuests error:", error)
     return []
   }
 }
 
 // Helper to save guests to Blob
 async function saveGuests(guests: Guest[]): Promise<void> {
-  await put(GUESTS_FILE, JSON.stringify(guests, null, 2), {
-    access: "private",
-    addRandomSuffix: false,
-    contentType: "application/json"
-  })
+  console.log("[v0] saveGuests - saving", guests.length, "guests...")
+  try {
+    await put(GUESTS_FILE, JSON.stringify(guests, null, 2), {
+      access: "private",
+      addRandomSuffix: false,
+      contentType: "application/json"
+    })
+    console.log("[v0] saveGuests - success!")
+  } catch (error) {
+    console.error("[v0] saveGuests error:", error)
+    throw error
+  }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { name, isAttending, familyMembers } = body
+    
+    console.log("[v0] RSVP POST - received:", { name, isAttending, familyMembers })
 
     if (!name) {
       return NextResponse.json(
@@ -52,7 +64,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    console.log("[v0] RSVP POST - getting existing guests...")
     const guests = await getGuests()
+    console.log("[v0] RSVP POST - current guests count:", guests.length)
 
     // Check if guest already exists by name (case insensitive)
     const existingGuest = guests.find(
@@ -77,14 +91,16 @@ export async function POST(request: NextRequest) {
     }
 
     guests.push(newGuest)
+    console.log("[v0] RSVP POST - saving guests...")
     await saveGuests(guests)
+    console.log("[v0] RSVP POST - saved successfully!")
 
     return NextResponse.json({
       success: true,
       guest: newGuest
     })
   } catch (error) {
-    console.error("RSVP error:", error)
+    console.error("[v0] RSVP POST error:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
