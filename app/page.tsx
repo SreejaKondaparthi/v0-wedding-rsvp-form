@@ -49,7 +49,11 @@ export default function WeddingPage() {
           
         </section>
 
+        {/* Event Timeline */}
+        <EventTimeline />
+
         <DecorativeBorder />
+        
         {/* RSVP Section */}
         <section className="py-12 px-4" id="rsvp">
           <h2 className="text-3xl md:text-4xl font-semibold text-center text-wedding-cocoa mb-2">
@@ -60,9 +64,6 @@ export default function WeddingPage() {
           </p>
           <RSVPForm />
         </section>
-
-        {/* Event Timeline */}
-        <EventTimeline />
 
         <DecorativeBorder />
 
