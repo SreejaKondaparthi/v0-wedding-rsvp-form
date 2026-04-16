@@ -35,6 +35,7 @@ async function saveGuests(guests: Guest[]): Promise<void> {
   await put(GUESTS_FILE, JSON.stringify(guests, null, 2), {
     access: "private",
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: "application/json"
   })
 }
