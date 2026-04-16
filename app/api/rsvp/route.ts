@@ -15,29 +15,37 @@ interface Guest {
 // Helper to get guests from Blob
 async function getGuests(): Promise<Guest[]> {
   try {
+    console.log("[v0] getGuests - attempting to get blob:", GUESTS_FILE)
     const result = await get(GUESTS_FILE, { access: "private" })
+    
+    console.log("[v0] getGuests - result:", result ? "found" : "not found")
     
     if (!result) {
       return []
     }
     
     const text = await result.text()
+    console.log("[v0] getGuests - text length:", text.length)
     const guests = JSON.parse(text)
+    console.log("[v0] getGuests - parsed guests count:", guests.length)
     return guests as Guest[]
   } catch (error) {
     // File doesn't exist yet or other error - return empty array
+    console.error("[v0] getGuests error:", error)
     return []
   }
 }
 
 // Helper to save guests to Blob
 async function saveGuests(guests: Guest[]): Promise<void> {
-  await put(GUESTS_FILE, JSON.stringify(guests, null, 2), {
+  console.log("[v0] saveGuests - saving", guests.length, "guests to", GUESTS_FILE)
+  const result = await put(GUESTS_FILE, JSON.stringify(guests, null, 2), {
     access: "private",
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json"
   })
+  console.log("[v0] saveGuests - saved, url:", result.url)
 }
 
 export async function POST(request: NextRequest) {
