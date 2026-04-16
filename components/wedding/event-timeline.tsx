@@ -75,7 +75,7 @@ export function EventTimeline() {
         Wedding Event
       </h2>
       <p className="text-center text-wedding-gold mb-8 text-lg">
-        Saturday, April 26, 2026
+        Sunday, April 26, 2026
       </p>
 
       <div className="max-w-2xl mx-auto">
